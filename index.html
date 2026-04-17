@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strategic Fusion Dashboard | Intelligence COP</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="tactical-dark">
+        <div id="radar-scan"></div>
+        <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar glass">
+            <header class="sidebar-header">
+                <div class="logo">
+                    <i data-lucide="shield-alert" class="icon-accent"></i>
+                    <h1>FUSION<span>COP</span></h1>
+                </div>
+                <p class="status-text"><span class="tactical-pulse"></span> System Live</p>
+            </header>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <h3>INTELLIGENCE LAYERS</h3>
+                    <div class="filter-group">
+                        <label class="filter-item">
+                            <input type="checkbox" checked data-layer="osint">
+                            <span class="custom-checkbox osint"></span>
+                            <i data-lucide="globe"></i> OSINT
+                        </label>
+                        <label class="filter-item">
+                            <input type="checkbox" checked data-layer="humint">
+                            <span class="custom-checkbox humint"></span>
+                            <i data-lucide="users"></i> HUMINT
+                        </label>
+                        <label class="filter-item">
+                            <input type="checkbox" data-layer="growth">
+                            <span class="custom-checkbox growth"></span>
+                            <i data-lucide="trending-up"></i> GROWTH ZONES
+                        </label>
+                        <label class="filter-item">
+                            <input type="checkbox" data-layer="fleet">
+                            <span class="custom-checkbox fleet"></span>
+                            <i data-lucide="truck"></i> LOGISTICS FLEET
+                        </label>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <h3>AUTOMATED RETRIEVAL</h3>
+                    <div class="sync-item">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>S3 BUCKET: INTEL_IMG</span>
+                            <span style="color: var(--accent-cyan)">SYNCING</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill syncing"></div></div>
+                    </div>
+                    <div class="sync-item">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>MONGODB: OSINT_LIVE</span>
+                            <span style="color: var(--accent-green)">STABLE</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" style="width: 100%; background: var(--accent-green)"></div></div>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+            </nav>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span id="stat-nodes">3</span>
+                    <small>FUSED NODES</small>
+                </div>
+                <div class="stat-item">
+                    <span id="stat-latency">12ms</span>
+                    <small>S3 LATENCY</small>
+                </div>
+            </div>
+
+            <footer class="sidebar-footer">
+                <div class="coord-display">
+                    <span class="label">CURSOR POS</span>
+                    <span id="coord-val">00.0000° N, 00.0000° E</span>
+                </div>
+            </footer>
+        </aside>
+
+        <!-- Main Map Area -->
+        <main class="map-area">
+            <div id="map"></div>
+            
+            <!-- Floating Data Feed -->
+            <div class="data-feed glass">
+                <div class="feed-header">
+                    <i data-lucide="activity"></i>
+                    <span>LIVE INTEL FEED</span>
+                </div>
+                <ul id="intel-feed-list">
+                    <!-- Feed items injected here -->
+                </ul>
+            </div>
+
+            <!-- HeatMap Legend -->
+            <div id="heatmap-legend" class="heatmap-legend hidden">
+                <span style="font-size: 0.7rem; font-weight: 700;">GROWTH VELOCITY (GVS)</span>
+                <div class="legend-bar"></div>
+                <div class="legend-labels">
+                    <span>LOW</span>
+                    <span>HIGH</span>
+                </div>
+            </div>
+
+            <!-- Timeline Projection Panel -->
+            <div id="timeline-panel" class="timeline-panel hidden">
+                <div style="min-width: 100px; font-weight: 700; font-size: 0.8rem;">PROJECTION</div>
+                <div class="timeline-slider-container">
+                    <input type="range" id="timeline-slider" min="0" max="60" value="0">
+                </div>
+                <div class="projection-label">
+                    <span id="proj-val">CURRENT</span>
+                    <small>MONTHS OUT</small>
+                </div>
+            </div>
+
+            <!-- Logistics Sensing Layer Indicator -->
+            <div id="sensing-panel" class="heatmap-legend hidden" style="bottom: 340px;">
+                <span style="font-size: 0.7rem; font-weight: 700;">TRAFFIC SENSING LAYER</span>
+            <!-- Live Debug Terminal -->
+            <div id="debug-terminal" class="terminal-overlay">
+                <div class="terminal-header">
+                    <span>LIVE RECONSTRUCTION PROTOCOL</span>
+                    <span class="pulse"></span>
+                </div>
+                <ul id="terminal-logs" class="terminal-logs">
+                    <!-- Matrix logs injected here -->
+                </ul>
+            </div>
+        </main>
+
+        <!-- Modals -->
+        <div id="imint-modal" class="modal-overlay hidden">
+            <div class="modal-content glass">
+                <button class="close-modal"><i data-lucide="x"></i></button>
+                <div class="modal-body">
+                    <div class="image-preview">
+                        <img id="modal-img" src="" alt="Satellite IMINT">
+                        <div class="scan-line"></div>
+                    </div>
+                    <div class="metadata-panel">
+                        <h2 id="modal-title">IMINT ANALYSIS</h2>
+                        <div class="meta-grid">
+                            <div class="meta-item">
+                                <span class="label">TIMESTAMP</span>
+                                <span id="meta-time" class="value">2026-04-17 14:30 Z</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="label">COORDINATES</span>
+                                <span id="meta-coords" class="value">00.000, 00.000</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="label">SOURCE</span>
+                                <span id="meta-source" class="value">SATELLITE-B4</span>
+                            </div>
+                        </div>
+                        <p id="modal-desc" class="description"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="app.js" type="module"></script>
+    <script>
+        // Init Lucide
+        lucide.createIcons();
+    </script>
+</body>
+</html>
