@@ -190,6 +190,7 @@ body {
 
 .terminal-logs li.error { color: var(--accent-red); }
 .terminal-logs li.warn { color: var(--accent-orange); }
+.terminal-logs li.ok { color: var(--accent-green); }
 
 /* Real Estate / Heatmap Styles */
 .heatmap-legend {
@@ -364,9 +365,10 @@ body {
     cursor: pointer;
 }
 
-.drop-zone:hover {
+.drop-zone:hover, .drop-zone.drag-over {
     border-color: var(--accent-cyan);
-    background: rgba(0, 242, 255, 0.05);
+    background: rgba(0, 242, 255, 0.1);
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
 }
 
 .drop-zone i {

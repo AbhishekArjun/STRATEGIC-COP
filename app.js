@@ -292,35 +292,43 @@ function setupEventListeners() {
         document.getElementById('imint-modal').classList.add('hidden');
     });
 
-    // Drag & Drop Simulation
-    const dropZone = document.getElementById('drag-drop-zone');
-    if (dropZone) {
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        ['dragenter', 'dragover'].forEach(eventName => {
             dropZone.addEventListener(eventName, (e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                dropZone.classList.add('drag-over');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('drag-over');
             }, false);
         });
 
         dropZone.addEventListener('drop', (e) => {
             const dt = e.dataTransfer;
             const files = dt.files;
-            pushToTerminal(`UPLOAD: ${files[0].name} RECEIVED. PARSING IMINT...`, 'info');
-            setTimeout(() => {
-                pushToTerminal(`SUCCESS: METADATA EXTRACTED. NODE ADDED AT CURSOR.`, 'ok');
-                const center = state.map.getCenter();
-                addOrUpdateNode({
-                    id: `upload-${Date.now()}`,
-                    type: 'imint',
-                    coords: [center.lat + 0.5, center.lng + 0.5],
-                    title: 'UPLOADED_ASSET',
-                    desc: 'Manually ingested intelligence data.',
-                    status: 'verified',
-                    image: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&q=80&w=1200'
-                });
-            }, 1000);
+            
+            if (files && files.length > 0) {
+                pushToTerminal(`UPLOAD: ${files[0].name} RECEIVED. PARSING IMINT...`, 'info');
+                setTimeout(() => {
+                    pushToTerminal(`SUCCESS: METADATA EXTRACTED. NODE ADDED AT CURSOR.`, 'ok');
+                    const center = state.map.getCenter();
+                    addOrUpdateNode({
+                        id: `upload-${Date.now()}`,
+                        type: 'imint',
+                        coords: [center.lat + (Math.random() - 0.5) * 0.1, center.lng + (Math.random() - 0.5) * 0.1],
+                        title: 'UPLOADED_ASSET',
+                        desc: 'Manually ingested intelligence data.',
+                        status: 'verified',
+                        image: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&q=80&w=1200'
+                    });
+                }, 1000);
+            }
         });
-    }
 }
 
 function pushToFeed(data) {
