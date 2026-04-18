@@ -75,6 +75,13 @@ sequenceDiagram
 | **Fragmented Data Repair** | `fixBrokenJSON()` and `repairPacket()` heuristic logic. |
 | **Rich Aesthetics** | Tactical Dark Mode, Glassmorphism, and Conic Radar Scans. |
 | **Hover Previews** | `tactical-tooltip` showing rich metadata and image previews on hover. |
+| **Storage Integration** | Mocked **MongoDB** (for OSINT Vector logs) and **AWS S3** (for IMINT imagery storage). |
+
+## 🗄️ Backend Integration (Mocked)
+The platform is architected to interface with low-latency tactical backends:
+- **MongoDB (OSINT_LIVE)**: Stores unstructured social vectors and infrastructure tender data.
+- **AWS S3 (INTEL_IMG)**: A high-availability bucket for sub-meter resolution satellite imagery and thermal IMINT frames.
+- **Auto-Sync**: The sidebar displays real-time sync status for both storage layers, simulating live API connections.
 
 ## 📦 Project Structure
 - `index.html`: Core UI structure.

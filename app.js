@@ -292,6 +292,8 @@ function setupEventListeners() {
         document.getElementById('imint-modal').classList.add('hidden');
     });
 
+    const dropZone = document.getElementById('drag-drop-zone');
+    if (dropZone) {
         ['dragenter', 'dragover'].forEach(eventName => {
             dropZone.addEventListener(eventName, (e) => {
                 e.preventDefault();
@@ -329,6 +331,7 @@ function setupEventListeners() {
                 }, 1000);
             }
         });
+    }
 }
 
 function pushToFeed(data) {
