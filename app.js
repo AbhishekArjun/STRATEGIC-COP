@@ -262,6 +262,68 @@ function showIMINTModal(data) {
 }
 
 function setupEventListeners() {
+    // 1. Diagnostic Error Logging
+    window.onerror = function(msg, url, line) {
+        pushToTerminal(`SYS_ERROR: ${msg} [Line: ${line}]`, 'error');
+        return false;
+    };
+
+    // 2. Drag & Drop + Manual Upload Fallback
+    const dropZone = document.getElementById('drag-drop-zone');
+    const fileInput = document.getElementById('file-input');
+
+    if (dropZone && fileInput) {
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) processFiles(e.target.files);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('drag-over');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('drag-over');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files && files.length > 0) processFiles(files);
+            else pushToTerminal("UPLOAD ERROR: No files in drop event.", "error");
+        });
+    }
+
+    function processFiles(files) {
+        pushToTerminal(`UPLOAD: ${files[0].name} RECEIVED. PARSING...`, 'info');
+        setTimeout(() => {
+            pushToTerminal(`SUCCESS: METADATA EXTRACTED. NODE ADDED.`, 'ok');
+            const center = state.map.getCenter();
+            const coords = [center.lat + (Math.random() - 0.5) * 0.1, center.lng + (Math.random() - 0.5) * 0.1];
+            
+            addOrUpdateNode({
+                id: `upload-${Date.now()}`,
+                type: 'imint',
+                coords: coords,
+                title: 'UPLOADED_ASSET',
+                desc: `Manual Ingestion: ${files[0].name}`,
+                status: 'verified',
+                image: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&q=80&w=1200'
+            });
+            state.map.flyTo(coords, 8);
+        }, 1000);
+    }
+
+    // 3. Layer Filters
     document.querySelectorAll('.filter-item input').forEach(input => {
         input.addEventListener('change', (e) => {
             const l = e.target.getAttribute('data-layer');
@@ -287,56 +349,14 @@ function setupEventListeners() {
     }
 
     state.map.on('mousemove', (e) => {
-        document.getElementById('coord-val').innerText = `${e.latlng.lat.toFixed(4)}° N, ${e.latlng.lng.toFixed(4)}° E`;
+        const el = document.getElementById('coord-val');
+        if (el) el.innerText = `${e.latlng.lat.toFixed(4)}° N, ${e.latlng.lng.toFixed(4)}° E`;
     });
     
-    document.querySelector('.close-modal').addEventListener('click', () => {
-        document.getElementById('imint-modal').classList.add('hidden');
-    });
-
-    const dropZone = document.getElementById('drag-drop-zone');
-    if (dropZone) {
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                dropZone.classList.add('drag-over');
-            }, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                dropZone.classList.remove('drag-over');
-            }, false);
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            
-            if (files && files.length > 0) {
-                pushToTerminal(`UPLOAD: ${files[0].name} RECEIVED. PARSING IMINT...`, 'info');
-                setTimeout(() => {
-                    pushToTerminal(`SUCCESS: METADATA EXTRACTED. NODE ADDED AT CURSOR.`, 'ok');
-                    const center = state.map.getCenter();
-                    const coords = [center.lat + (Math.random() - 0.5) * 0.1, center.lng + (Math.random() - 0.5) * 0.1];
-                    
-                    addOrUpdateNode({
-                        id: `upload-${Date.now()}`,
-                        type: 'imint',
-                        coords: coords,
-                        title: 'UPLOADED_ASSET',
-                        desc: `Manually ingested: ${files[0].name}`,
-                        status: 'verified',
-                        image: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&q=80&w=1200'
-                    });
-                    state.map.flyTo(coords, 8);
-                }, 1000);
-            } else {
-                pushToTerminal(`UPLOAD ERROR: No files detected.`, 'error');
-            }
+    const closeBtn = document.querySelector('.close-modal');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            document.getElementById('imint-modal').classList.add('hidden');
         });
     }
 }
