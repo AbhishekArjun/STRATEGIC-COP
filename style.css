@@ -573,11 +573,93 @@ body {
     color: var(--text-secondary);
 }
 
-/* Leaflet Overrides */
+/* Leaflet Overrides & Tactical Tooltips */
 .leaflet-container { background: var(--bg-dark) !important; }
 .leaflet-bar a { background-color: var(--sidebar-bg) !important; color: white !important; border-color: var(--glass-border) !important; box-shadow: none !important; }
 .leaflet-popup-content-wrapper { background: var(--sidebar-bg) !important; color: white !important; backdrop-filter: blur(8px); border: 1px solid var(--glass-border); }
 .leaflet-popup-tip { background: var(--sidebar-bg) !important; }
+
+.leaflet-tooltip-tactical {
+    background: rgba(10, 10, 12, 0.9) !important;
+    border: 1px solid var(--accent-cyan) !important;
+    border-radius: 4px !important;
+    color: white !important;
+    padding: 0 !important;
+    box-shadow: 0 0 20px rgba(0, 242, 255, 0.2) !important;
+    min-width: 220px;
+    z-index: 1500;
+}
+
+.tactical-tooltip {
+    padding: 0;
+    font-family: var(--font-mono);
+}
+
+.tooltip-header {
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 6px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    letter-spacing: 1px;
+}
+
+.tooltip-header.osint { background: rgba(0, 242, 255, 0.2); color: var(--accent-cyan); }
+.tooltip-header.humint { background: rgba(249, 115, 22, 0.2); color: var(--accent-orange); }
+.tooltip-header.imint { background: rgba(0, 255, 65, 0.2); color: var(--accent-green); }
+.tooltip-header.fleet { background: rgba(255, 255, 255, 0.2); color: #fff; }
+.tooltip-header.telemetry { background: rgba(0, 242, 255, 0.2); color: var(--accent-cyan); }
+
+.tooltip-body {
+    padding: 10px;
+}
+
+.tooltip-img {
+    position: relative;
+    width: 100%;
+    height: 120px;
+    background: #000;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    overflow: hidden;
+}
+
+.tooltip-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.7;
+}
+
+.scan-line-mini {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--accent-green);
+    box-shadow: 0 0 10px var(--accent-green);
+    animation: scan 2s linear infinite;
+}
+
+.tooltip-body .desc {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.6rem;
+    margin-bottom: 4px;
+}
+
+.meta-row .label { color: var(--text-secondary); }
+.meta-row .value { font-weight: 700; }
+
+.status-verified { color: var(--accent-cyan); }
+.status-estimated { color: #fbbf24; }
 
 /* Custom Marker CSS */
 .tactical-marker {
@@ -586,7 +668,41 @@ body {
     border-radius: 50%;
     border: 2px solid white;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    transition: all 0.2s ease;
 }
-.tactical-marker.osint { background: var(--accent-cyan); box-shadow: 0 0 15px var(--accent-cyan); }
-.tactical-marker.humint { background: var(--accent-amber); box-shadow: 0 0 15px var(--accent-amber); }
-.tactical-marker.imint { background: var(--accent-green); box-shadow: 0 0 15px var(--accent-green); }
+
+.tactical-marker.osint { background: var(--accent-cyan); border-color: #fff; }
+.tactical-marker.humint { background: var(--accent-orange); border-color: #fff; }
+.tactical-marker.imint { background: var(--accent-green); border-color: #fff; }
+.tactical-marker.telemetry { background: var(--accent-cyan); border-color: #fff; }
+
+/* Status Glows */
+.tactical-marker.verified {
+    box-shadow: 0 0 15px var(--accent-cyan);
+}
+
+.tactical-marker.estimated {
+    box-shadow: 0 0 20px #fbbf24;
+    border-color: #fbbf24 !important;
+}
+
+.tactical-marker.estimated::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border: 1px dashed #fbbf24;
+    border-radius: 50%;
+    animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.ok { color: var(--accent-green); }
+.err { color: var(--accent-red); }
+

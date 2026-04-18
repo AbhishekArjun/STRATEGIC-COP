@@ -31,16 +31,64 @@ This platform integrates multi-modal data sources (OSINT, HUMINT, IMINT) into an
 - **Live Debug Terminal**: Matrix-style scrolling logs showing the underlying mathematical logic.
 - **Global Radar Sweep**: Visual conic surveillance scan for enhanced situational immersion.
 
+## 🏗️ Architecture & Data Flow
+
+### System Architecture
+```mermaid
+graph TD
+    UI[index.html / style.css] <--> App[app.js Orchestrator]
+    App --> TP[telemetryProcessor.js]
+    App --> GE[growthEngine.js]
+    App --> LE[logisticsEngine.js]
+    
+    TP --> |Kalman Filter| App
+    GE --> |Growth Projection| App
+    LE --> |Rerouting Logic| App
+    
+    Data[(Mock Data: MongoDB/S3)] --> App
+```
+
+### Intelligence Pipeline (Data Flow)
+```mermaid
+sequenceDiagram
+    participant Raw as Raw Data Sources
+    participant Proc as Middleware (Logic Units)
+    participant UI as Tactical Dashboard
+    
+    Raw->>Proc: Fragmented JSON (LoRa)
+    Proc->>Proc: fixBrokenJSON() Repair
+    Proc->>Proc: Kalman State Estimation (t-1, t-2)
+    Proc->>UI: Verified vs Estimated Markers
+    
+    Raw->>Proc: Urban Tender & Price Data
+    Proc->>Proc: Growth Velocity Scoring (GVS)
+    Proc->>UI: Time-Series Heatmap Projection
+```
+
+## 🎯 Mapping to Problem Statement
+
+| Requirement | Implementation Feature |
+| :--- | :--- |
+| **Common Operating Picture** | Unified Leaflet Map with toggleable intelligence layers. |
+| **Multi-Modal Data Fusion** | Integration of OSINT, HUMINT, and IMINT (Mocked S3/MongoDB). |
+| **State Estimation (t-1, t-2)** | `telemetryProcessor.js` using Kalman Filter for predictive continuity. |
+| **Fragmented Data Repair** | `fixBrokenJSON()` and `repairPacket()` heuristic logic. |
+| **Rich Aesthetics** | Tactical Dark Mode, Glassmorphism, and Conic Radar Scans. |
+| **Hover Previews** | `tactical-tooltip` showing rich metadata and image previews on hover. |
+
 ## 📦 Project Structure
 - `index.html`: Core UI structure.
 - `style.css`: Tactical design system and animations.
-- `app.js`: Main logic orchestrator.
+- `app.js`: Main logic orchestrator & Mock Data Integration.
 - `telemetryProcessor.js`: Telemetry repair and Kalman engine.
 - `growthEngine.js`: GVS analytics and real estate projections.
 - `logisticsEngine.js`: Routing and congestion simulation.
 
 ## 🚦 Getting Started
-Simply open `index.html` in any modern web browser to launch the Tactical Dashboard.
+1. Open `index.html` in a modern browser.
+2. Hover over markers to see **Rich IMINT Previews**.
+3. Observe the **Live Terminal** for "Packet Repair" logs.
+4. Drag an image onto the **Manual Ingestion** zone to simulate data entry.
 
 ---
 *Developed as an end-to-end Strategic Intelligence solution.*
