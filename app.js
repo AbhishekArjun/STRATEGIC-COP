@@ -319,16 +319,21 @@ function setupEventListeners() {
                 setTimeout(() => {
                     pushToTerminal(`SUCCESS: METADATA EXTRACTED. NODE ADDED AT CURSOR.`, 'ok');
                     const center = state.map.getCenter();
+                    const coords = [center.lat + (Math.random() - 0.5) * 0.1, center.lng + (Math.random() - 0.5) * 0.1];
+                    
                     addOrUpdateNode({
                         id: `upload-${Date.now()}`,
                         type: 'imint',
-                        coords: [center.lat + (Math.random() - 0.5) * 0.1, center.lng + (Math.random() - 0.5) * 0.1],
+                        coords: coords,
                         title: 'UPLOADED_ASSET',
-                        desc: 'Manually ingested intelligence data.',
+                        desc: `Manually ingested: ${files[0].name}`,
                         status: 'verified',
                         image: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&q=80&w=1200'
                     });
+                    state.map.flyTo(coords, 8);
                 }, 1000);
+            } else {
+                pushToTerminal(`UPLOAD ERROR: No files detected.`, 'error');
             }
         });
     }

@@ -352,8 +352,9 @@ body {
 }
 
 .filter-item input:checked + .custom-checkbox.osint { background: var(--accent-cyan); border-color: var(--accent-cyan); }
-.filter-item input:checked + .custom-checkbox.humint { background: var(--accent-amber); border-color: var(--accent-amber); }
+.filter-item input:checked + .custom-checkbox.humint { background: var(--accent-orange); border-color: var(--accent-orange); }
 .filter-item input:checked + .custom-checkbox.imint { background: var(--accent-green); border-color: var(--accent-green); }
+.filter-item input:checked + .custom-checkbox.telemetry { background: var(--accent-cyan); border-color: var(--accent-cyan); }
 
 /* Drop Zone */
 .drop-zone {
@@ -363,6 +364,11 @@ body {
     text-align: center;
     transition: all 0.3s ease;
     cursor: pointer;
+    position: relative;
+}
+
+.drop-zone * {
+    pointer-events: none;
 }
 
 .drop-zone:hover, .drop-zone.drag-over {

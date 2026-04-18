@@ -31,45 +31,56 @@ This platform integrates multi-modal data sources (OSINT, HUMINT, IMINT) into an
 - **Live Debug Terminal**: Matrix-style scrolling logs showing the underlying mathematical logic.
 - **Global Radar Sweep**: Visual conic surveillance scan for enhanced situational immersion.
 
-## 🏗️ Architecture & Data Flow
+## 📐 Architecture & Logic Deep-Dive
 
-### System Architecture
-```mermaid
-graph TD
-    UI[index.html / style.css] <--> App[app.js Orchestrator]
-    App --> TP[telemetryProcessor.js]
-    App --> GE[growthEngine.js]
-    App --> LE[logisticsEngine.js]
-    
-    TP --> |Kalman Filter| App
-    GE --> |Growth Projection| App
-    LE --> |Rerouting Logic| App
-    
-    Data[(Mock Data: MongoDB/S3)] --> App
-```
+### 1. Unified Intelligence Logic (app.js)
+The orchestrator manages asymmetric data streams using a **Layered Fusion** approach:
+- **Asynchronicity**: Real-time feeds from MongoDB (OSINT) and S3 (IMINT) are simulated via asynchronous event loops, ensuring the UI remains responsive (60fps).
+- **Event Bus**: User interactions (filtering, timeline sliding) trigger localized re-renders of Leaflet layer groups, minimizing DOM overhead.
 
-### Intelligence Pipeline (Data Flow)
+### 2. Predictive Reconstruction (telemetryProcessor.js)
+To satisfy the "State Estimation" requirement, the platform uses a **2D Kalman Filter**:
+- **t-1 & t-2 States**: The engine stores the last two known positions and calculates a velocity vector.
+- **Heuristic Repair**: Fragmented JSON strings are repaired using regex-based pattern matching before being passed to the estimator.
+- **Confidence Scoring**: Estimated nodes (🟡) are assigned a transparency value based on the variance of the prediction.
+
+### 3. Growth Velocity Scoring (growthEngine.js)
+The "Predictive Urban Growth" model uses a weighted algorithm:
+- **Supply-Side**: Government tender density (from OSINT).
+- **Demand-Side**: Real estate price volatility (from OSINT).
+- **Output**: A 0.0 to 1.0 intensity score visualized via a localized heatmap.
+
+## 🗄️ Backend Data Flow
 ```mermaid
-sequenceDiagram
-    participant Raw as Raw Data Sources
-    participant Proc as Middleware (Logic Units)
-    participant UI as Tactical Dashboard
+graph LR
+    subgraph "Storage Layer"
+        M[(MongoDB: OSINT)] 
+        S[(S3: IMINT)]
+    end
     
-    Raw->>Proc: Fragmented JSON (LoRa)
-    Proc->>Proc: fixBrokenJSON() Repair
-    Proc->>Proc: Kalman State Estimation (t-1, t-2)
-    Proc->>UI: Verified vs Estimated Markers
+    subgraph "Processing Engine"
+        P{Logic Fusion}
+        K[Kalman Estimator]
+        G[Growth Scorer]
+    end
     
-    Raw->>Proc: Urban Tender & Price Data
-    Proc->>Proc: Growth Velocity Scoring (GVS)
-    Proc->>UI: Time-Series Heatmap Projection
+    subgraph "Presentation"
+        UI[[Tactical Dashboard]]
+    end
+    
+    M --> P
+    S --> P
+    P --> K
+    P --> G
+    K --> UI
+    G --> UI
 ```
 
 ## 🎯 Mapping to Problem Statement
 
 | Requirement | Implementation Feature |
 | :--- | :--- |
-| **Common Operating Picture** | Unified Leaflet Map with toggleable intelligence layers. |
+| **Common Operating Picture** | Unified Leaflet Map with 6 toggleable intelligence layers. |
 | **Multi-Modal Data Fusion** | Integration of OSINT, HUMINT, and IMINT (Mocked S3/MongoDB). |
 | **State Estimation (t-1, t-2)** | `telemetryProcessor.js` using Kalman Filter for predictive continuity. |
 | **Fragmented Data Repair** | `fixBrokenJSON()` and `repairPacket()` heuristic logic. |
@@ -77,25 +88,19 @@ sequenceDiagram
 | **Hover Previews** | `tactical-tooltip` showing rich metadata and image previews on hover. |
 | **Storage Integration** | Mocked **MongoDB** (for OSINT Vector logs) and **AWS S3** (for IMINT imagery storage). |
 
-## 🗄️ Backend Integration (Mocked)
-The platform is architected to interface with low-latency tactical backends:
-- **MongoDB (OSINT_LIVE)**: Stores unstructured social vectors and infrastructure tender data.
-- **AWS S3 (INTEL_IMG)**: A high-availability bucket for sub-meter resolution satellite imagery and thermal IMINT frames.
-- **Auto-Sync**: The sidebar displays real-time sync status for both storage layers, simulating live API connections.
-
 ## 📦 Project Structure
-- `index.html`: Core UI structure.
-- `style.css`: Tactical design system and animations.
-- `app.js`: Main logic orchestrator & Mock Data Integration.
-- `telemetryProcessor.js`: Telemetry repair and Kalman engine.
-- `growthEngine.js`: GVS analytics and real estate projections.
-- `logisticsEngine.js`: Routing and congestion simulation.
+- `index.html`: Core UI structure & Layer management.
+- `style.css`: Tactical design system and glassmorphism tokens.
+- `app.js`: Main logic orchestrating the fusion of data layers.
+- `telemetryProcessor.js`: The "Brain" for LoRa repair and Kalman estimation.
+- `growthEngine.js`: Algorithmic engine for real estate predictive modeling.
+- `logisticsEngine.js`: Routing and congestion sensing logic.
 
 ## 🚦 Getting Started
 1. Open `index.html` in a modern browser.
 2. Hover over markers to see **Rich IMINT Previews**.
-3. Observe the **Live Terminal** for "Packet Repair" logs.
-4. Drag an image onto the **Manual Ingestion** zone to simulate data entry.
+3. Observe the **Live Terminal** for "Packet Repair" logs (simulating LoRa bit-rot).
+4. Drag a file onto the **Manual Ingestion** zone to simulate an IMINT upload.
 
 ---
 *Developed as an end-to-end Strategic Intelligence solution.*
