@@ -62,6 +62,7 @@ function init() {
 
     setupEventListeners();
     startSimulations();
+    updateStats();
     if (window.lucide) lucide.createIcons();
 }
 
@@ -239,6 +240,7 @@ function addOrUpdateNode(data, prediction = null) {
         
         marker.addTo(state.layers[data.type]);
         state.nodes[data.id] = marker;
+        updateStats();
     }
 }
 
@@ -336,6 +338,18 @@ function setupEventListeners() {
                 pushToTerminal(`UPLOAD ERROR: No files detected.`, 'error');
             }
         });
+    }
+}
+
+function updateStats() {
+    const nodeCount = Object.keys(state.nodes).length + Object.keys(state.fleetAssets).length;
+    const nodeEl = document.getElementById('stat-nodes');
+    if (nodeEl) nodeEl.innerText = nodeCount;
+
+    const latencyEl = document.getElementById('stat-latency');
+    if (latencyEl) {
+        const jitter = (10 + Math.random() * 5).toFixed(0);
+        latencyEl.innerText = `${jitter}ms`;
     }
 }
 
